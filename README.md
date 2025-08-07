@@ -86,12 +86,21 @@ Instructions to run is in the README file of the frontend directory
 * Gemini LLM: Strong language understanding for planning and conversations.
 
 ## Key Decisions & Trade-offs
+* Agent yields higher general and reasoning capabilities than workflow (but is more costly).
 
-* Sessions stored in memory (simple but lost on restart).
+* Sessions stored in memory (cannot keep track of memory if restart).
 
-* Explicit tool parameters (helps accuracy but more code).
+* Explicit tool parameters (Upfront initial investment in coding and defining tools).
 
-* Mock server for offline dev (not production-ready in auth or scale).
+* Mock server for offline dev (not production-ready for scale).
+  
+* HTTPX client (modern but adds an external dependency).
+
+* React frontend (fast prototyping but requires CORS and bundling configuration).
+
+* LangGraph’s planning loop (streamlines tool orchestration but can make debugging harder).
+
+* Detailed system prompts (guide LLM behavior but increase prompt size and latency).
 
 ## Scaling Up
 
