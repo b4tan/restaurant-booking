@@ -27,40 +27,30 @@ The Restaurant Booking Agent is a conversational AI assistant that helps custome
 ```
 agent/
 ├── clients/
-│   ├── __init__.py
 │   └── restaurant_api.py      # API client wrapper
 ├── langgraph/
-│   ├── __init__.py
 │   ├── tools.py              # LangGraph Tool definitions
 │   └── utils.py              # HTTP client and error handling utilities
+│   └── agents.py              # Container for callable tools
 ├── agent.py                  # Main agent with HTTP server mode
 ├── requirements.txt          # Python dependencies
 ├── test_tools.py            # Test script for tools
-├── test_agent.py            # Test script for agent functionality
-├── example_usage.py         # Example usage script
+├── test_restaurant_api.py   # Test script for api call
 └── README.md                # This file
 ```
 
 ## Setup
 
-1. Install dependencies:
+1. Install dependencies (in backend directory):
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Set your Google API key:
-```bash
-export GOOGLE_API_KEY="your-google-api-key-here"
-```
-
-   To get a Google API key:
-   1. Go to [Google AI Studio](https://aistudio.google.com/)
-   2. Create a new API key
-   3. Copy the key and set it as an environment variable
+2. Set your Google API key in .env file:
 
 3. Ensure the restaurant booking API server is running:
 ```bash
-cd ../app-server
+cd ../app
 python -m app
 ```
 
@@ -126,13 +116,12 @@ The agent provides the following LangGraph tools:
 The agent runs as a FastAPI server:
 
 ```bash
-python agent.py --port 8000
+python agent.py 
 ```
 
 This starts a FastAPI server with:
 - `/chat` POST endpoint for chat interactions
 - `/health` GET endpoint for health checks
-- `/docs` for API documentation
 
 ### Example Usage
 
@@ -140,13 +129,7 @@ This starts a FastAPI server with:
 # Start with default port (8000)
 python agent.py
 
-# Start server on custom port
-python agent.py --port 9000
-
-# Use custom Google API key
-python agent.py --google-api-key "your-key"
 ```
-
 ## Testing
 
 Run the test scripts to verify everything works correctly:
@@ -184,35 +167,6 @@ User: "What's the status of my booking ABC1234?"
 Agent: "Let me retrieve the details for your booking ABC1234..."
 ```
 
-## Usage Example
-
-```python
-from agent import RestaurantBookingAgent
-
-# Initialize the agent
-agent = RestaurantBookingAgent()
-
-# Chat with the agent
-response = agent.chat_sync("Check availability for TheHungryUnicorn on 2025-01-15 for 4 people")
-print(response)
-```
-
-## Error Handling
-
-All tools include comprehensive error handling:
-
-- **Parameter Validation**: Checks for required parameters and validates data types
-- **Date/Time Parsing**: Validates date and time formats
-- **API Errors**: Catches and returns HTTP errors from the API server
-- **General Exceptions**: Catches any unexpected errors and returns them in a consistent format
-
-Error responses follow the format:
-```json
-{
-  "error": "Error description"
-}
-```
-
 ## Utilities
 
 ### HTTP Client and Error Handling
@@ -224,22 +178,6 @@ The `utils.py` module provides:
 - **Validation Functions**: Helper functions for date, time, and parameter validation
 - **Response Formatting**: Consistent error and success response formatting
 
-### Error Handling
-
-All tools include comprehensive error handling:
-
-- **Parameter Validation**: Checks for required parameters and validates data types
-- **Date/Time Parsing**: Validates date and time formats
-- **API Errors**: Catches and returns HTTP errors from the API server
-- **General Exceptions**: Catches any unexpected errors and returns them in a consistent format
-
-Error responses follow the format:
-```json
-{
-  "error": "Error description"
-}
-```
-
 ## API Client
 
 The `RestaurantAPI` client in `clients/restaurant_api.py` handles:
@@ -250,87 +188,3 @@ The `RestaurantAPI` client in `clients/restaurant_api.py` handles:
 - **Error Handling**: Raises appropriate exceptions for HTTP errors
 
 The client is configured to connect to `http://localhost:8547` by default, which is where the mock API server runs.
-
-## Design Rationale
-
-### Framework Selection
-
-**LangGraph/LangChain**: Chosen for its robust agent framework capabilities:
-- **Tool Integration**: Seamless integration with external APIs through tool definitions
-- **Conversation Management**: Built-in support for multi-turn conversations with chat history
-- **Error Handling**: Comprehensive error handling and recovery mechanisms
-- **Production Ready**: Mature framework with extensive documentation and community support
-
-**Google Gemini 2.0 Flash**: Selected for the LLM component:
-- **Cost Effective**: Free tier available for development and testing
-- **Performance**: Fast response times suitable for real-time chat applications
-- **Reliability**: Google's infrastructure ensures high availability
-- **Function Calling**: Excellent support for structured tool calling
-
-### Design Decisions and Trade-offs
-
-**HTTP Server vs CLI Interface**:
-- **Decision**: HTTP server with `/chat` endpoint
-- **Rationale**: Enables easy integration with web frontends and mobile applications
-- **Trade-off**: Slightly more complex than CLI but much more flexible
-
-**Async Architecture**:
-- **Decision**: Async/await pattern throughout
-- **Rationale**: Better performance for handling multiple concurrent requests
-- **Trade-off**: More complex than synchronous code but essential for production
-
-**Error Handling Strategy**:
-- **Decision**: Consistent error format with detailed messages
-- **Rationale**: Helps users understand and resolve issues quickly
-- **Trade-off**: More verbose responses but better user experience
-
-### Production Scalability
-
-**Horizontal Scaling**:
-- Stateless design allows multiple instances behind a load balancer
-- Database connections can be pooled and shared
-- Redis or similar for session management in multi-instance deployments
-
-**Performance Optimization**:
-- Connection pooling for HTTP requests to the restaurant API
-- Caching of frequently accessed data (availability, restaurant info)
-- Rate limiting to prevent abuse
-
-**Monitoring and Observability**:
-- Health check endpoints for service monitoring
-- Structured logging for debugging and analytics
-- Metrics collection for performance monitoring
-
-### Security Considerations
-
-**API Key Management**:
-- Environment variable configuration for sensitive data
-- Secure key rotation mechanisms
-- API key validation and monitoring
-
-**Input Validation**:
-- Comprehensive parameter validation before API calls
-- SQL injection prevention through parameterized queries
-- XSS protection through proper output encoding
-
-**Rate Limiting**:
-- Request rate limiting to prevent abuse
-- IP-based blocking for malicious requests
-- DDoS protection through cloud services
-
-### Limitations and Improvements
-
-**Current Limitations**:
-- Single restaurant support (TheHungryUnicorn only)
-- No user authentication or session management
-- Limited conversation context (no long-term memory)
-- No integration with payment systems
-
-**Potential Improvements**:
-- Multi-restaurant support with restaurant discovery
-- User authentication and booking history
-- Integration with calendar systems
-- Payment processing integration
-- Multi-language support
-- Voice interface capabilities
-- Advanced analytics and reporting 

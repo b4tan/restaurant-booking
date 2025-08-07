@@ -12,7 +12,6 @@ restaurant-booking-project/
 │   │   │       ├── availability.py
 │   │   │       └── booking.py
 │   │   ├── requirements.txt      # Dependencies for API server
-│   │   └── Dockerfile            # Optional containerization
 │   └── agent/                    # LangGraph agent wrapping API endpoints as tools
 │       ├── agent.py              # Boots LangGraph agent, can expose REST endpoint
 │       ├── langgraph/
