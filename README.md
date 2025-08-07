@@ -24,6 +24,7 @@ Together, these pieces showcase how to build a tool‐enabled AI assistant that 
 
 
 # Project directory
+```
 restaurant-booking-project/
 ├── backend/
 │   ├── app/
@@ -61,7 +62,7 @@ restaurant-booking-project/
 │       └── styles/
 │           └── App.css           # Center layout and basic styling
 └── README.md                     # Project overview and setup instructions
-
+```
 
 # Instructions to run app
 ### Run the backend - Mock server (app directory) and agent server (agent directory)
